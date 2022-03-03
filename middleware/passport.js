@@ -16,7 +16,6 @@ async function validateUser(username, password, done) {
     }
     return done(null,{id: user.id});
 }
-
 passport.use(
     new Strategy({
             usernameField: 'email',
@@ -24,7 +23,6 @@ passport.use(
         }, validateUser
     )
 );
-
 passport.serializeUser(function(user,done){
     process.nextTick(function(){
         done(null, {
@@ -32,12 +30,14 @@ passport.serializeUser(function(user,done){
         })
     })
 });
-
 passport.deserializeUser(async function(user,done){
-    const userModel = await User.findByPk(user.id);
+    const userModel = await User.findByPk(user.id,{
+        include: ['student','staff']
+    });
     process.nextTick(function(){
         return done(null, userModel);
     });
 });
+
 
 module.exports.passport = passport;
